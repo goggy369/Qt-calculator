@@ -638,6 +638,7 @@ void Calculator::constantClicked()
 //点击正负切换键
 void Calculator::changeSignClicked()
 {
+    if (last == "abort") return;
     QString text = displayIn->text();
 
     if (text == "0") {
@@ -658,6 +659,7 @@ void Calculator::changeSignClicked()
 //平方 开方 倒数 绝对值 阶乘 10^x log ln
 void Calculator::unaryOperatorClicked()
 {
+    if (last == "abort") return;
     Button *clickedBtn = qobject_cast<Button *>(sender());
     QString clickedOperator = clickedBtn->text();
     QString text = displayIn->text().remove(',');
@@ -754,6 +756,7 @@ void Calculator::unitClicked()
 //点击三角函数运算符
 void Calculator::trigonometricClicked()
 {
+    if (last == "abort") return;
     Button *clickedBtn = qobject_cast<Button *>(sender());
     QString clickedOperator = clickedBtn->text();
     QString text = displayIn->text().remove(',');
@@ -841,6 +844,7 @@ double mod(double a, double b) {
 //点击加法运算符
 void Calculator::additiveOperatorClicked()
 {
+    if (last == "abort") return;
     Button *clickedBtn = qobject_cast<Button *>(sender());
     if (!clickedBtn)
         return;
@@ -911,6 +915,7 @@ void Calculator::additiveOperatorClicked()
 //点击乘法运算符
 void Calculator::multiplicativeOperatorClicked()
 {
+    if (last == "abort") return;
     Button *clickedBtn = qobject_cast<Button *>(sender());
     if (!clickedBtn)
         return;
@@ -970,6 +975,7 @@ void Calculator::multiplicativeOperatorClicked()
 //点击等号
 void Calculator::equalClicked()
 {
+    if (last == "abort") return;
     QString displayText = displayIn->text().remove(',');
     double operand = displayText.toDouble();
     QString textAbove = displayOut->text();
@@ -1040,8 +1046,9 @@ bool Calculator::calculate(double rightOperand, const QString &pendingOperator)
 //点击退格键
 void Calculator::backspaceClicked()
 {
-    if (waitingForOperand)
+    if (waitingForOperand && last != "abort")
         return;
+    if (last == "abort") clear();
 
     QString text = displayIn->text();
     text.chop(1);
@@ -1060,6 +1067,7 @@ void Calculator::clear()
         removeUnary();
     }
     waitingForOperand = true;
+    if (last == "abort") last = "equal";
 }
 
 //点击C键，重置计算器
@@ -1122,6 +1130,7 @@ void Calculator::abortOperation_0()
     clearAll();
     displayIn->setText(tr("除数不能为零"));
     waitingForOperand = true;
+    last = "abort";
 }
 
 void Calculator::abortOperation_1()
@@ -1129,4 +1138,5 @@ void Calculator::abortOperation_1()
     clearAll();
     displayIn->setText(tr("无效输入"));
     waitingForOperand = true;
+    last = "abort";
 }
